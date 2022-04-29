@@ -1,68 +1,48 @@
-import React, { useState } from "react"
-import Header from "./Header"
-import InputTodo from "./InputTodo"
-import TodosList from "./TodosList"
-import { v4 as uuidv4 } from "uuid"
+import React, { useState } from 'react';
+import { FaPlusCircle } from 'react-icons/fa';
 
-const TodoContainer = () => {
-  const [todos, setTodos] = useState([])
+/* eslint-disable react/prop-types */
+const InputTodo = (props) => {
+  const [inputText, setInputText] = useState({
+    title: '',
+  });
 
-  const handleChange = id => {
-    setTodos(prevState =>
-      prevState.map(todo => {
-        if (todo.id === id) {
-          return {
-            ...todo,
-            completed: !todo.completed,
-          }
-        }
-        return todo
-      })
-    )
-  }
+  const onChange = (e) => {
+    setInputText({
+      ...inputText,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  const delTodo = id => {
-    setTodos([
-      ...todos.filter(todo => {
-        return todo.id !== id
-      }),
-    ])
-  }
-
-  const addTodoItem = title => {
-    const newTodo = {
-      id: uuidv4(),
-      title: title,
-      completed: false,
+  const handleSubmit = (e) => {
+    const { title } = inputText;
+    const { addTodoProps } = props;
+    e.preventDefault();
+    if (title.trim()) {
+      addTodoProps(title);
+      setInputText({
+        title: '',
+      });
     }
-    setTodos([...todos, newTodo])
-  }
-
-  const setUpdate = (updatedTitle, id) => {
-    setTodos(
-      todos.map(todo => {
-        if (todo.id === id) {
-          todo.title = updatedTitle
-        }
-        return todo
-      })
-    )
-  }
+  };
 
   return (
-    <div className="container">
-      <div className="inner">
-        <Header />
-        <InputTodo addTodoProps={addTodoItem} />
-        <TodosList
-          todos={todos}
-          handleChangeProps={handleChange}
-          deleteTodoProps={delTodo}
-          setUpdate={setUpdate}
+    <form onSubmit={handleSubmit} className="form-container">
+      <input
+        type="text"
+        className="input-text"
+        placeholder="Add todo..."
+        value={inputText.title}
+        name="title"
+        onChange={onChange}
+      />
+      <button type="submit" className="input-submit">
+        <FaPlusCircle
+          style={{ color: 'darkcyan', fontSize: '20px', marginTop: '2px' }}
         />
-      </div>
-    </div>
-  )
-}
+      </button>
+    </form>
+  );
+};
 
-export default TodoContainer
+export default InputTodo;
